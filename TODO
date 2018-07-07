@@ -1,11 +1,4 @@
 # -*- mode: org; -*-
 * TODO 从终端读取输入
-* TODO 比较两个命令的输入，用来测试
-
-#+begin_src bash
-diff <(cal) <(cal | racket cat.rkt)
-#+end_src
-
 * TODO grep
-
 * TODO wc
