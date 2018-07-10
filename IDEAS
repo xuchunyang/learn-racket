@@ -1,3 +1,4 @@
 # -*- mode: org; -*-
 * TODO opencc binding
 * TODO Print directory tree
+* TODO live grep (like helm, run-with-idle-timer)
