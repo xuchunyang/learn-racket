@@ -21,10 +21,11 @@
       (let loop ([i 0]
                  [byte (read-byte in)])
         (if (eof-object? byte)
-            (displayln "Done")
+            (printf "~a Done\n" filename)
             (begin
               (when (memv i percentages)
-                (printf "~a%\n"
+                (printf "~a ~a%\n"
+                        filename
                         (~a (exact->inexact (* (/ i content-length) 100)) #:width 2)))
               (write-byte byte out)
               (loop (add1 i) (read-byte in))))))))
@@ -40,5 +41,7 @@
           (return (second matches)))))))
 
 (module+ main
-  (define url (vector-ref (current-command-line-arguments) 0))
-  (download url))
+  (let ([threads
+         (for/list ([url (in-vector (current-command-line-arguments))])
+           (thread (lambda () (download url))))])
+    (for-each thread-wait threads)))
