@@ -1,5 +1,4 @@
 # -*- mode: org; -*-
-* TODO opencc binding
 * TODO Print directory tree
 * TODO live grep (like helm, run-with-idle-timer)
 
@@ -10,7 +9,7 @@
            (displayln (read-char)))))
 #+end_src
 
-* TODO call c function ?
+* TODO opencc binding / call c function
 
 #+begin_src racket
 #lang racket/base
@@ -33,4 +32,4 @@
 (void (endwin))
 #+end_src
 
-* TODO gui app
+* TODO web app
