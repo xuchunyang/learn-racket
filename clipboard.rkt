@@ -1,4 +1,7 @@
-#lang racket
+#lang racket/base
+
+(require racket/port
+         racket/system)
 
 (provide copy paste)
 
