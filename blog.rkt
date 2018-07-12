@@ -23,10 +23,6 @@
 (define (start request)
   (render-blog-page request))
 
-(define (can-parse-post? bindings)
-  (and (exists-binding? 'title bindings)
-       (exists-binding? 'body bindings)))
-
 (define (parse-post bindings)
   (post (extract-binding/single 'title bindings)
         (extract-binding/single 'body bindings)))
