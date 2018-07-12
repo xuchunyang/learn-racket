@@ -1,5 +1,5 @@
 # -*- mode: org; -*-
-* TODO Print directory tree
+* TODO tree
 * TODO live grep (like helm, run-with-idle-timer)
 
 #+begin_src racket
@@ -32,4 +32,4 @@
 (void (endwin))
 #+end_src
 
-* TODO web app
+* TODO hello world web app
