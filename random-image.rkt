@@ -23,7 +23,10 @@
 (match (system-type)
   ['macosx (serve/servlet start
                           #:servlet-regexp #rx""
-                          #:servlet-path "/")]
+                          #:servlet-path "/"
+                          #:ssl? #t
+                          #:ssl-cert (expand-user-path "~/example.com+5.pem")
+                          #:ssl-key (expand-user-path "~/example.com+5-key.pem"))]
   ;; Ubuntu 服务器
   ['unix (serve/servlet start
                         #:servlet-regexp #rx""
