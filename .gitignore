@@ -3,3 +3,5 @@ compiled/
 /xkcd/
 # persistent-data.rkt
 /persistent-data.dat
+# 把诗词JSON转换成目录结构.rkt
+/诗词/
