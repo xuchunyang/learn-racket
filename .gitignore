@@ -1,3 +1,5 @@
 compiled/
 # xkcd.rkt
 /xkcd/
+# persistent-data.rkt
+/persistent-data.dat
