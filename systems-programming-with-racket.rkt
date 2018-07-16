@@ -1,6 +1,13 @@
 #lang racket
 
-(require xml net/url)
+;; Usage:
+;;
+;; (define stop (serve 8080))
+;; (stop)
+
+(require net/url
+         racket/control
+         xml)
 
 (define (serve port-no)
   (define main-cust (make-custodian))
@@ -38,7 +45,7 @@
     ;; 跳过剩余的 Header
     (regexp-match #rx"(\r\n|^)\r\n" in)
     ;; 分发
-    (let ([xexpr (dispatch (list-ref req 1))])
+    (let ([xexpr (prompt (dispatch (list-ref req 1)))])
       (display "HTTP/1.0 200 Okay\r\n" out)
       (display "Server: k\r\nContent-Type: text/html\r\n\r\n" out)
       (display (xexpr->string xexpr) out))))
@@ -83,3 +90,45 @@
 
 (hash-set! dispatch-table "many" many)
 (hash-set! dispatch-table "reply" reply)
+
+(define (sum query)
+  (build-request-page "First Number:" "/one" ""))
+
+(define (one query)
+  (build-request-page "Second Number:"
+                      "/two"
+                      (cdr (assq 'number query))))
+
+(define (two query)
+  (let ([n (string->number (cdr (assq 'hidden query)))]
+        [m (string->number (cdr (assq 'number query)))])
+    `(html (body "The same is " ,(number->string (+ m n))))))
+
+(hash-set! dispatch-table "sum" sum)
+(hash-set! dispatch-table "one" one)
+(hash-set! dispatch-table "two" two)
+
+(define (sum2 query)
+  (define m (get-number "First number:"))
+  (define n (get-number "Second number:"))
+  `(html (body "The sum is " ,(number->string (+ m n)))))
+
+(hash-set! dispatch-table "sum2" sum2)
+
+(define (get-number label)
+  (define query
+    ;; Generate a URL for the current compulation:
+    (send/suspend
+     ;; Recieve the computation-as-URL here
+     (λ (k-url)
+       ;; Generate the query-page result from this connection
+       ;; Send the query result to the saved-compulation URL:
+       (build-request-page label k-url ""))))
+  ;; we arrive here later, in a new connection
+  (string->number (cdr (assq 'number query))))
+
+(define (send/suspend mk-page)
+  (let/cc k
+    (define tag (format "k~a" (current-inexact-milliseconds)))
+    (hash-set! dispatch-table tag k)
+    (abort (mk-page (string-append "/" tag)))))
