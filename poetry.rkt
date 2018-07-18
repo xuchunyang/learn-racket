@@ -20,6 +20,7 @@
       [_ #f]))
   (define author (get-value #"author" bindings))
   (define title (get-value #"title" bindings))
+  (define footer '(p "Powered by " (a ((href "https://racket-lang.org/")) "Racket")))
   (if (and author title)
       (let ([author+title (string-append author " - " title)])
         (response/xexpr
@@ -28,7 +29,8 @@
                       ,(let ((res (search author title)))
                          (if res
                              `(pre ,res)
-                             "没找到"))))))
+                             "没找到"))
+                      ,footer))))
       (response/xexpr
        `(html (head (title "诗词"))
               (body (h2 "诗词")
@@ -37,12 +39,19 @@
                      (input ((type "text") (name "author") (required "") (value "李清照")))
                      (label ((for "title")) "标题：")
                      (input ((type "text") (name "title") (required "") (value "声声慢")))
-                     (input ((type "submit") (value "搜索")))))))))
+                     (input ((type "submit") (value "搜索"))))
+                    ,footer)))))
+
+(define DB
+  (if (file-exists? "poetry.sqlite")
+      "poetry.sqlite"
+      ;; Ubuntu VPS
+      "/var/www/xuchunyang.me/racket/poetry.sqlite"))
 
 (define db-conn
   (virtual-connection
    (connection-pool
-    (lambda () (sqlite3-connect #:database "poetry.sqlite" #:mode 'read-only)))))
+    (lambda () (sqlite3-connect #:database DB #:mode 'read-only)))))
 
 (define (search author title)
   (define rows (query-rows
