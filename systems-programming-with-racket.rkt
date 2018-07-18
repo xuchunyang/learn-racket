@@ -1,3 +1,4 @@
+;; https://docs.racket-lang.org/more/index.html
 #lang racket
 
 ;; Usage:
@@ -108,6 +109,7 @@
 (hash-set! dispatch-table "one" one)
 (hash-set! dispatch-table "two" two)
 
+;; Continuations
 (define (sum2 query)
   (define m (get-number "First number:"))
   (define n (get-number "Second number:"))
