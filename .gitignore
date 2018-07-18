@@ -5,3 +5,5 @@ compiled/
 /persistent-data.dat
 # 把诗词JSON转换成目录结构.rkt
 /诗词/
+# poetry.rkt
+/poetry.sqlite
