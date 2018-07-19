@@ -54,10 +54,27 @@
     (lambda () (sqlite3-connect #:database DB #:mode 'read-only)))))
 
 (define (search author title)
-  (define rows (query-rows
-                db-conn
-                "select * from poetry where author = $1 and title = $2;"
-                author title))
+  (define rows
+    (match (list author title)
+      [(list "random" "random")
+       (query-rows
+        db-conn
+        "select * from poetry order by RANDOM() limit 1;")]
+      [(list "random" _)
+       (query-rows
+        db-conn
+        "select * from poetry where title = $1 order by RANDOM() limit 1;"
+        title)]
+      [(list _ "random")
+       (query-rows
+        db-conn
+        "select * from poetry where author = $1 order by RANDOM() limit 1;"
+        author)]
+      [_
+       (query-rows
+        db-conn
+        "select * from poetry where author = $1 and title = $2;"
+        author title)]))
   (if (empty? rows)
       #f
       (last (vector->list (first rows)))))
