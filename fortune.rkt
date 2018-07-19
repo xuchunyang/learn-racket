@@ -9,7 +9,7 @@
   (response/xexpr
    `(html (head (title "Fortune"))
           (body (pre
-                 ,(with-output-to-string (lambda () (system "fortune"))))))))
+                 ,(shell-command-to-string "fortune"))))))
 
 (match (system-type)
   ['macosx (serve/servlet start
