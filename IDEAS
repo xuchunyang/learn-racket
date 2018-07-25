@@ -1,35 +1,9 @@
 # -*- mode: org; -*-
-* TODO tree
-* TODO live grep (like helm, run-with-idle-timer)
+* Macro
 
-#+begin_src racket
-(sync/timeout
- 1
- (thread (lambda ()
-           (displayln (read-char)))))
-#+end_src
-
-* TODO opencc binding / call c function
-
-#+begin_src racket
-#lang racket/base
-(require ffi/unsafe
-         ffi/unsafe/define)
-
-(define-ffi-definer define-curses (ffi-lib "libcurses"))
-
-(define _WINDOW-pointer (_cpointer 'WINDOW))
-
-(define-curses initscr (_fun -> _WINDOW-pointer))
-(define-curses waddstr (_fun _WINDOW-pointer _string -> _int))
-(define-curses wrefresh (_fun _WINDOW-pointer -> _int))
-(define-curses endwin (_fun -> _int))
-
-(define win (initscr))
-(void (waddstr win "Hello"))
-(void (wrefresh win))
-(sleep 1)
-(void (endwin))
-#+end_src
-
-* TODO hello world web app
+- let-alist
+- aif
+- setq
+- when-let
+- bind-key
+- cl-incf
