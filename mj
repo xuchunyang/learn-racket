@@ -1,0 +1,58 @@
+#!/usr/bin/env racket
+#lang racket/base
+
+(require json
+         racket/cmdline)
+
+(define VERSION "2018.07.26")
+
+(define (print-item item)
+  (printf "~a\n\t\t-- ~a\n"
+          (hash-ref item 'contents)
+          (hash-ref item 'source)))
+
+(define (list-random-ref lst #:how-many [how-many 1])
+  (let loop ([idxes '()])
+    (if (and (< (length idxes) how-many)
+             (<= (length idxes) (length lst)))
+        (let ([r (random 0 (length lst))])
+          (if (memv r idxes)
+              (loop idxes)
+              (loop (cons r idxes))))
+        (for/list ([i (in-list idxes)])
+          (list-ref lst i)))))
+
+(define (find-items ITEMS limit [re-pat #f])
+  (define filtered-items
+    (if re-pat
+        (filter (lambda (item)
+                  (or (regexp-match re-pat (hash-ref item 'contents))
+                      (regexp-match re-pat (hash-ref item 'source))))
+                ITEMS)
+        ITEMS))
+  (list-random-ref filtered-items #:how-many limit))
+
+(define (main)
+  (define limit (make-parameter 1))
+  (define pattern (make-parameter #f))
+  (command-line
+   #:multi
+   [("-v" "--version")
+    "display version information and exit"
+    (displayln VERSION)
+    (exit)]
+   #:once-each
+   [("-l" "--limit")
+    l
+    "the number of items to print (default 1)"
+    (limit (string->number l))]
+   [("-s" "--search")
+    pat
+    "list items match pattern"
+    (pattern pat)])
+  (define JSON (expand-user-path "~/src/mingju/mingju.json"))
+  (define ITEMS (with-input-from-file JSON read-json))
+  (for-each print-item (find-items ITEMS (limit) (pattern))))
+
+(module+ main
+  (main))
