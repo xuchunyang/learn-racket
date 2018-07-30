@@ -2,9 +2,12 @@
 
 ;; The First Commandment
 ;;
-;; (preliminary)
+;; (first revision)
 ;;
-;; Always ask null? as the first question in expressing any function
+;; When recurring on a list of atoms, lat, ask two questions about it:
+;; (null? lat) and else.
+;; When recurring on a number, n, ask two questions about it:
+;; (zero? n) and else.
 
 ;; The Second Commandment
 ;;
@@ -17,11 +20,25 @@
 
 ;; The Fourth Commandment
 ;;
-;; (preliminary)
+;; (first revision)
 ;; 
 ;; Always change at least one argument while recurring. It must be
 ;; changed to be closer to the termination condition:
-;; when using cdr, test termination with null?
+;; when using cdr, test termination with null? and
+;; when using sub1, test termination with zero?
+
+;; The Fifth Commandment
+;;
+;; When building a value with +, always use 0 for the value of the
+;; terminating line, for adding 0 does not change the value of an
+;; addition.
+;;
+;; When build a value with *, always use 1 for the value of the
+;; terminating line, for multiplying by 1 does not change the value of
+;; a multiplication.
+;;
+;; When building a value with cons, always, consider () for the value
+;; of terminating line.
 
 null?
 
