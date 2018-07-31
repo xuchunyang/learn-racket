@@ -2,12 +2,14 @@
 
 ;; The First Commandment
 ;;
-;; (first revision)
+;; (final version)
 ;;
 ;; When recurring on a list of atoms, lat, ask two questions about it:
 ;; (null? lat) and else.
 ;; When recurring on a number, n, ask two questions about it:
 ;; (zero? n) and else.
+;; When recurring on a list of S-expressions, l, ask three questions
+;; about it: (null? l), (atom? (car l)), and else
 
 ;; The Second Commandment
 ;;
@@ -20,10 +22,17 @@
 
 ;; The Fourth Commandment
 ;;
-;; (first revision)
+;; (final version)
 ;; 
-;; Always change at least one argument while recurring. It must be
-;; changed to be closer to the termination condition:
+;; Always change at least one argument while recurring.
+;; When recurring on a list of atoms, lat, use (cdr lat).
+;; When recurring on a number, n, use (sub1 n).
+;; And when recurring on a list of S-expressions, l, use (car l) and
+;; (cdr l) if neither (null? l) nor (atom? (car l)) are true.
+;;
+;; It must be changed to be closer to the termination condition. The
+;; changing argument must be tested in the termination condition:
+;; 
 ;; when using cdr, test termination with null? and
 ;; when using sub1, test termination with zero?
 
@@ -39,6 +48,10 @@
 ;;
 ;; When building a value with cons, always, consider () for the value
 ;; of terminating line.
+
+;; The Sixth Commandment
+;;
+;; Simplify only after the function is correct.
 
 null?
 
