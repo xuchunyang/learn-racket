@@ -63,6 +63,10 @@
 ;;
 ;; Use help functions to abstract from representations.
 
+;; The Ninth Commandment
+;;
+;; Abstract common patterns with a new function
+
 null?
 
 zero?
