@@ -53,6 +53,16 @@
 ;;
 ;; Simplify only after the function is correct.
 
+;; The Seventh Commandment
+;;
+;; Recur on the subpoarts that are of the same nature:
+;; * On the sublists of a list
+;; * On the subexpressions of an arithmetic expression
+
+;; The Eighth Commandment
+;;
+;; Use help functions to abstract from representations.
+
 null?
 
 zero?
