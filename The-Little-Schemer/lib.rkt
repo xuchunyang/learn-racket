@@ -1,6 +1,6 @@
 #lang racket
 
-(provide atom? + * ↑ first second third build)
+(provide atom? + * ↑ first second third build pick a-pair?)
 
 (define atom?
   (λ (x)
@@ -60,6 +60,26 @@
 (define f
   (λ (x) x))
 
+#;
 ((f +) 1 2)
 
 (define build (λ (s1 s2) (cons s1 (cons s2 (quote ())))))
+
+(define pick
+  (λ (n l)
+    (cond [(= n 1) (car l)]
+          [else (pick (sub1 n) (cdr l))])))
+
+(module+ test
+  (check-equal? (pick 1 '(a b c)) 'a)
+  (check-equal? (pick 2 '(a b c)) 'b)
+  (check-equal? (pick 3 '(a b c)) 'c))
+
+(define a-pair?
+  (λ (x)
+    (cond
+      [(atom? x) #f]
+      [(null? x) #f]
+      [(null? (cdr x)) #f]
+      [(null? (cdr (cdr x))) #t]
+      [else #f])))
