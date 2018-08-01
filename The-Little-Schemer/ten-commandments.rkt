@@ -67,6 +67,10 @@
 ;;
 ;; Abstract common patterns with a new function
 
+;; The Tenth Commandment
+;;
+;; Build functions to collect more than one value at a time.
+
 null?
 
 zero?

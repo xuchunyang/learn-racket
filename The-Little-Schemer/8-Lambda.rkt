@@ -156,3 +156,125 @@
   (define rember (insert-g (lambda (new old l) l)))
 
   (rember #f 1 '(0 1 2 3)))
+
+(module value racket
+  (require "lib.rkt")
+  (define atom-to-function
+    (λ (x)
+      (cond [(eq? x '+) +]
+            [(eq? x '*) *]
+            [else ↑])))
+  (define value
+    (λ (nexp)
+      (cond [(atom? nexp) nexp]
+            [else
+             ((atom-to-function
+               (first nexp))
+              (value (second nexp))
+              (value (third nexp)))])))
+
+  (require rackunit)
+  (check-equal? (value '(+ 1 (* 2 (↑ 3 2)))) 19)
+  (check-equal? (value 19) 19))
+
+(module multirember racket
+  (require "lib.rkt")
+  (define multirember-f
+    (lambda (test?)
+      (lambda (a lat)
+        (cond [(null? lat) (quote ())]
+              [(test? a (car lat))
+               ((multirember-f test?) a (cdr lat))]
+              [else
+               (cons (car lat)
+                     ((multirember-f test?) a (cdr lat)))]))))
+
+  (require rackunit)
+  (check-equal? ((multirember-f eq?) 'b '(a b c a b c))
+                '(a c a c))
+  (check-equal? ((multirember-f =) 2 '(1 2 3 1 2 3))
+                '(1 3 1 3))
+
+  (define multiremberT
+    (lambda (test? lat)
+      (cond [(null? lat) (quote ())]
+            [(test? (car lat))
+             (multiremberT test? (cdr lat))]
+            [else
+             (cons (car lat) (multiremberT test? (cdr lat)))])))
+
+  (multiremberT (lambda (x) (= x 2))
+                '(1 2 3 3 2 1))
+
+  (multiremberT (λ (x) (eq? x 'b))
+                '(a b c a b c)))
+
+
+(require "lib.rkt")
+
+(define f
+  (λ (a lat col)
+    (cond [(null? lat) (col '() '())]
+          [(eq? (car lat) a)
+           (f a (cdr lat)
+              (λ (newlat seen)
+                (col newlat
+                     (cons (car lat) seen))))]
+          [else
+           (f a (cdr lat)
+              (λ (newlat seen)
+                (col (cons (car lat) newlat)
+                     seen)))])))
+
+(f
+ 'b
+ '(a b c a b c)
+ (λ (newlat seen)
+   (cons newlat (cons seen '()))))
+;; => '((a c a c) (b b))
+
+(f 'b '() (λ (x y) (null? y)))
+;; => #t
+
+;; 分析
+;;
+'(f 2 '(1 2 3) col)
+
+'(f 2 '(2 3) (λ (newlat seen)
+              (col (cons 1 newlat) seen)))
+
+'(f 2 '(3) (λ (newlat see)
+            ((λ (newlat seen)
+               (col (cons 1 newlat) seen))
+             newlat
+             (cons 2 seen))))
+
+'(f 2 '() (λ (newlat seen)
+           ((λ (newlat see)
+              ((λ (newlat seen)
+                 (col (cons 1 newlat) seen))
+               newlat
+               (cons 2 seen)))
+            (cons 3 newlat) seen)))
+
+(define col build)
+
+((λ (newlat seen)
+   ((λ (newlat see)
+      ((λ (newlat seen)
+         (col (cons 1 newlat) seen))
+       newlat
+       (cons 2 seen)))
+    (cons 3 newlat) seen))
+ '() '())
+
+(define multirember
+  (lambda (a lat)
+    (f a
+       lat
+       (lambda (newlat seen) newlat))))
+
+(multirember 2 '(1 2 3 1 2 3 4))
+
+;; col stands for "collector".
+;; A collector is sometimes called a "continuation"
