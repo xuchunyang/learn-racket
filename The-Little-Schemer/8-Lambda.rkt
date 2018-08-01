@@ -278,3 +278,109 @@
 
 ;; col stands for "collector".
 ;; A collector is sometimes called a "continuation"
+
+
+
+;; 设 oldL 和 oldR 不同
+(define insertLR
+  (λ (new oldL oldR lat)
+    (cond [(null? lat) '()]
+          [(eq? oldL (car lat))
+           (cons new (cons oldL (insertLR new oldL oldR (cdr lat))))]
+          [(eq? oldR (car lat))
+           (cons oldR (cons new (insertLR new oldL oldR (cdr lat))))]
+          [else
+           (cons (car lat) (insertLR new oldL oldR (cdr lat)))])))
+
+(insertLR '-- 'a 'c '(beg a b c mid a b c end))
+;; => '(beg -- a b c -- mid -- a b c -- end)
+
+(define g
+  (λ (new oldL oldR lat col)
+    (cond [(null? lat)
+           (col '() 0 0)]
+          [(eq? oldL (car lat))
+           (g new oldL oldR (cdr lat)
+              (λ (newlat L R)
+                (col (cons new (cons oldL newlat))
+                     (add1 L)
+                     R)))]
+          [(eq? oldR (car lat))
+           (g new oldL oldR (cdr lat)
+              (λ (newlat L R)
+                (col (cons oldR (cons new newlat))
+                     L
+                     (add1 R))))]
+          [else
+           (g new oldL oldR (cdr lat)
+              (λ (newlat L R)
+                (col (cons (car lat) newlat)
+                     L
+                     R)))])))
+
+(g '- 'a 'c '(beg a b c mid a b c hello a end)
+   (λ (newlat L R)
+     (list newlat L R)))
+;; => '((beg - a b c - mid - a b c - hello - a end) 3 2)
+
+(g 'salty 'fish 'chips '(chips and fish or fish and chips)
+   (lambda (newlat L R)
+     (list newlat L R)))
+;; => '((chips salty and salty fish or salty fish and chips salty) 2 2)
+
+
+
+(define evens-only*
+  (λ (l)
+    (cond [(null? l) '()]
+          [(atom? (car l))
+           (cond [(even? (car l))
+                  (cons (car l) (evens-only* (cdr l)))]
+                 [else
+                  (evens-only* (cdr l))])]
+          [else
+           (cons (evens-only* (car l))
+                 (evens-only* (cdr l)))])))
+
+(evens-only* '((9 1 2 8)
+               3
+               10
+               ((9 9) 7 6)
+               2))
+;; => '((2 8) 10 (() 6) 2)
+
+;; evens-only*
+(define h
+  (λ (l col)
+    (cond [(null? l) (col '() 0 1)]
+          [(atom? (car l))
+           (cond [(even? (car l))
+                  (h (cdr l)
+                     (λ (newl sum-of-odds product-of-evens)
+                       (col (cons (car l) newl)
+                            sum-of-odds
+                            (* (car l) product-of-evens))))]
+                 [else
+                  (h (cdr l)
+                     (λ (newl sum-of-odds product-of-evens)
+                       (col newl
+                            (+ (car l) sum-of-odds)
+                            product-of-evens)))])]
+          [else
+           (h (car l)
+              (λ (al as ap)
+                (h (cdr l)
+                   (λ (dl ds dp)
+                     (col (cons al dl)
+                          (+ as ds)
+                          (* ap dp))))))])))
+
+(h '((9 1 2 8)
+     3
+     10
+     ((9 9) 7 6)
+     2)
+   (λ (newl sum-of-odds product-of-evens)
+     (list newl sum-of-odds product-of-evens)))
+
+;; => '(((2 8) 10 (() 6) 2) 38 1920)
