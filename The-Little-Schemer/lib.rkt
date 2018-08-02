@@ -1,6 +1,6 @@
 #lang racket
 
-(provide atom? + * ↑ first second third build pick a-pair?)
+(provide atom? + * ↑ first second third build pick a-pair? revpair ÷ eternity)
 
 (define atom?
   (λ (x)
@@ -83,3 +83,20 @@
       [(null? (cdr x)) #f]
       [(null? (cdr (cdr x))) #t]
       [else #f])))
+
+(define revpair
+  (λ (pair)
+    (build (second pair) (first pair))))
+
+(define one?
+  (λ (n)
+    (zero? (sub1 n))))
+
+(define ÷
+  (λ (n m)
+    (cond [(< n m) 0]
+          [else (add1 (÷ (- n m) m))])))
+
+(define eternity
+  (λ (x)
+    (eternity x)))
