@@ -314,3 +314,15 @@ a-entry
 (meaning '((lambda (x y) (cons x (cons y (cons z '())))) 1 2)
          '(((x y z) (0 0 3))))
 ;; => '(1 2 3)
+
+(meaning '(((lambda (le)
+              ((lambda (f) (f f))
+               (lambda (f)
+                 (le (lambda (x) ((f f) x))))))
+            (lambda (length)
+              (lambda (l)
+                (cond ((null? l) 0)
+                      (else (add1 (length (cdr l))))))))
+           '(1 2 (3 4) 5))
+         '())
+;; => 4
