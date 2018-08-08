@@ -1,0 +1,23 @@
+#!/usr/bin/env racket
+#lang racket/base
+
+(require racket/system
+         racket/port
+         racket/pretty
+         json)
+
+;; jq '.[] | select(.title == "問")' dict-revised.json
+(define (jq title)
+  (with-output-to-string
+    (λ ()
+      (system* (find-executable-path "jq")
+               (format ".[] | select(.title == \"~a\")" title)
+               (expand-user-path "~/src/moedict-data/dict-revised.json")))))
+
+(module+ main
+  (when (= (vector-length (current-command-line-arguments)) 1)
+    (let [(js (jq (vector-ref (current-command-line-arguments) 0)))]
+      (unless (string=? js "")
+        (with-input-from-string js
+          (λ ()
+            (pretty-print (read-json))))))))
