@@ -16,12 +16,12 @@
 (define (copy str)
   (if (eq? (system-type) 'macosx)
       (macosx-copy str)
-      (displayln "Unsupported system")))
+      (error 'copy "unsupport system: ~a" (system-type))))
 
 (define (paste)
   (if (eq? (system-type) 'macosx)
       (macosx-paste)
-      (displayln "Unsupported system")))
+      (error 'paste "unsupport system: ~a" (system-type))))
 
 (module+ test
   (require rackunit)
